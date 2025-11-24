@@ -4,3 +4,24 @@ __pycache__/
 mongo/data/
 mongodb-script.sh
 .pytest_cache/
+# Python venv
+.venv/
+venv/
+env/
+
+# PyCache
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Build files
+dist/
+build/
+
+# Environment
+.env

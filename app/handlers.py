@@ -10,13 +10,40 @@ from .db import TSUTAYA_MEMBER
 from .api import movies, member
 import logging
 
-app = FastAPI(title = "FastAPI Video Store",
-              description = "Description and technical detail of APIs, Live on Medium | Author : Peem Srinikorn",
-              version = "0.0.1")
+app = FastAPI(
+    title="FastAPI Video Store",
+    description="Description and technical detail of APIs, Live on Medium | Author : Peem Srinikorn",
+    version="0.0.1",
+)
 
+# ---------------------------
+# NEW: Root Path
+# ---------------------------
+@app.get("/")
+async def root():
+    return {
+        "message": "FastAPI Video Store API is running",
+        "docs": "/docs",
+        "version": app.version
+    }
+
+# ---------------------------
+# NEW: Health Check
+# ---------------------------
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
+# ---------------------------
+# Original API
+# ---------------------------
 @app.get("/api/v1/info")
 async def information():
-    return {"app_name": app.title , "version" : app.version, "documents_path" : "/docs"}
+    return {
+        "app_name": app.title,
+        "version": app.version,
+        "documents_path": "/docs",
+    }
 
 @app.on_event("startup")
 async def startup_event():
@@ -29,11 +56,16 @@ async def shutdown_event():
 async def get_x_card_id_token(x_card_id: str = Header(...)):
     try:
         if not TSUTAYA_MEMBER.get(x_card_id, False):
-            raise HTTPException(status_code = 400, detail = "X-Card-ID header invalid")
+            raise HTTPException(
+                status_code=400, detail="X-Card-ID header invalid"
+            )
     except Exception as e:
         logging.error(e)
-        raise HTTPException(status_code = 400, detail = "X-Card-ID header invalid")
+        raise HTTPException(
+            status_code=400, detail="X-Card-ID header invalid"
+        )
 
+# Include Routers
 app.include_router(
     member.router,
     prefix="/api/v1",

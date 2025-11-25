@@ -1,15 +1,23 @@
-#!/usr/bin/env dockerfile
-# -*- coding: utf-8 -*-
-# =============================================================================
-# Created By  : Peem Srinikorn
-# Created Date: Tue Sep  8 20:57:59 +07 2020
-# =============================================================================
+# Dockerfile สำหรับ FastAPI + Cloud Run
 
-FROM python:3.6-slim
-LABEL maintainer "Peem Srinikorn"
-ADD . / 
-RUN apt-get update \ 
-    && apt-get install gcc -y \
-    && pip install --no-cache-dir -r requirements.txt \
-    && rm -rf /var/lib/apt/lists/* 
-CMD ["python", "main.py"]
+FROM python:3.12-slim
+
+# ตั้งค่าพื้นฐานของ Python
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# โฟลเดอร์ทำงานใน container
+WORKDIR /app
+
+# ติดตั้ง dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ก็อปโค้ดทั้งหมดเข้า image
+COPY . .
+
+# Cloud Run ใช้พอร์ต 8080
+EXPOSE 8080
+
+# รัน FastAPI ผ่าน uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

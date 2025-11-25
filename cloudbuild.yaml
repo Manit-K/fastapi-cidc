@@ -1,6 +1,6 @@
 steps:
-  # Build Docker image
-  - name: gcr.io/cloud-builders/docker
+  # Step 1: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'build',
@@ -9,15 +9,15 @@ steps:
         '.'
       ]
 
-  # Push Docker image
-  - name: gcr.io/cloud-builders/docker
+  # Step 2: Push Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'push',
         'asia-southeast1-docker.pkg.dev/smarttrack2project/fastapi-cicd/fastapi-api:$SHORT_SHA'
       ]
 
-  # Deploy to Cloud Run
+  # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -33,3 +33,6 @@ steps:
 
 images:
   - 'asia-southeast1-docker.pkg.dev/smarttrack2project/fastapi-cicd/fastapi-api:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
